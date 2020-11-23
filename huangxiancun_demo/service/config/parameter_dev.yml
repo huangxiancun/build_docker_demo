@@ -1,0 +1,52 @@
+﻿#词典配置
+dictionary_path: dictionary
+
+#日志文件
+logfile: config/logging.conf
+
+#数据库配置
+dbconfig:
+  mincached: 5
+  maxcached: 10
+  maxconnections: 50
+  blocking: True
+  maxshared: 51
+  host: localhost
+  #host: mysql
+  port: 3306
+  user: root
+  passwd: '1234567890'
+  dbname: robot
+  charset: utf8
+  
+#ip和端口号配置
+rpc:
+  server:
+    host: 0.0.0.0
+    port: 5004
+  bind:
+    host: 0.0.0.0
+    port: 5004
+  sleep_seconds: 86400
+
+#zookeeper节点
+zookeeper:
+  client:
+    #hosts配置client的ip和端口，多个client可以用逗号分隔
+    hosts: zoo1:2181
+    timeout: 5.0
+  service:
+    name: robot_outbound_dev
+    node_path: /robot/robot_server/robot_outbound_dev
+    #address:server_host
+    address: 123.207.221.203
+    port: 9004
+    sslport: ""
+    payload: ""
+    serviceType: "DYNAMIC"
+    #ephemeral=True表示会话过期就删除该节点，默认是False
+    ephemeral: True
+    #sequence=True序列号总是固定长度为10位,一旦创建了这样一个节点，序列号将增加一个，默认是False
+    sequence: False
+    #makepath=True节点路径相同会报错NodeExistsError
+    makepath: True

@@ -1,0 +1,63 @@
+# -*- coding: UTF-8 -*-
+# @Date    : 20120-09-02
+# @Author  : cfz
+# @Version : Python3.6
+
+from service.dto.dto_base import DBHandler
+
+class {{ class_name }}(DBHandler):
+
+    def __init__(self,{% for row in table.rows %}{% if loop.last %}{{ row.column_name }}=None{% else %}{{ row.column_name }}=None,{% endif %}{% endfor %}):
+    {% for row in table.rows %}    self.{{ row.column_name }}={{ row.column_name }}
+    {% endfor %}
+    def build_entity(self, data_tuple=None):
+        if data_tuple is not None and len(data_tuple) > 0:
+            return {{ class_name }}({% for row in table.rows %}{% if loop.last %}data_tuple[{{ loop.index0 }}]{% else %}data_tuple[{{ loop.index0 }}],{% endif %}{% endfor %})
+        return None
+
+    def insert(self):
+        sql = """
+        insert into {{ table.name }}({% for row in table.rows %}{% if loop.last %}{{ row.column_name }}{% else %}{{ row.column_name }},{% endif %}{% endfor %}) values ({% for row in table.rows %}{% if loop.last %}%s{% else %}%s,{% endif %}{% endfor %})
+        """
+        if self is not None and self.id is not None:
+            self.excute(sql, ({% for row in table.rows %}{% if loop.last %}self.{{ row.column_name }}{% else %}self.{{ row.column_name }},{% endif %}{% endfor %}))
+        return self
+
+    def find_list(self):
+        sql = """
+        select {% for row in table.rows %}{% if loop.last %}{{ row.column_name }}{% else %}{{ row.column_name }},{% endif %}{% endfor %} from {{ table.name }}
+        """
+        if self is not None:
+            data_list = []
+            condition_sql = ''
+            {% for row in table.rows %}
+            if self.{{ row.column_name }} is not None:
+                condition_sql = condition_sql + ' and {{ row.column_name }}=%s '
+                data_list.append(self.{{ row.column_name }})
+            {% endfor %}
+            if len(condition_sql) > 0:
+                sql = sql + ' where ' + condition_sql[4:]
+
+            tuple_list = list(self.query_all(sql, tuple(data_list)))
+            ret_list = []
+            for d in tuple_list:
+                build_entity = self.build_entity(d)
+                if build_entity is not None:
+                    ret_list.append(build_entity)
+            return ret_list
+        return []
+
+    def find_by_id(self):
+        sql = """
+        select {% for row in table.rows %}{% if loop.last %}{{ row.column_name }}{% else %}{{ row.column_name }},{% endif %}{% endfor %} from {{ table.name }} where id=%s
+        """
+        if self is not None and self.id is not None:
+            d = self.query(sql, self.id)
+            return self.build_entity(d)
+        return None
+
+    def update_by_id(self):
+        pass
+
+    def delete_by_id(self):
+        pass

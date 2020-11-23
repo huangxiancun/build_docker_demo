@@ -1,0 +1,20 @@
+version: "3.1"
+services:
+    robot_outbound:
+        image: 15861813785/nlp/huangxiancun_demo:latest
+        restart: always
+        ports:
+           - 6004:6004
+        volumes:
+          - /data/huangxiancun_demo:/opt/robot_outbound
+        command: python app.py -g /opt/huangxiancun_dmeo/service/config/parameter.yml
+
+
+    zoo1:
+        image: zookeeper:3.5.0
+        restart: always
+        port:
+            - 8001:2181
+
+
+
